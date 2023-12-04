@@ -1,0 +1,7 @@
+
+Read me file
+
+Sources:
+Credit Card Activity 3.6 in vba
+Census activity 3.7, 3.8
+Study Group: Sergyo & Larry

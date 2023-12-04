@@ -1,0 +1,84 @@
+
+Sub Stocks():
+    Dim ws As Worksheet
+    Dim lastRow As Long
+    Dim ticker As String
+    Dim openPrice As Double
+    Dim closePrice As Double
+    Dim yearlyChange As Double
+    Dim percentChange As Double
+    Dim totalVolume As Double
+    Dim summaryTable As Range
+    Dim outputRow As Long
+    Dim maxIncrease As Double
+    Dim maxDecrease As Double
+    Dim maxVolume As Double
+    Dim maxIncreaseTicker As String
+    Dim maxDecreaseTicker As String
+    Dim maxVolumeTicker As String
+    
+    For Each ws In Worksheets
+    
+        lastRow = ws.Cells(ws.Rows.Count, "A").End(xlUp).Row
+        ws.Cells(1, 9).Value = "Ticker"
+        ws.Cells(1, 10).Value = "Yearly Change"
+        ws.Cells(1, 11).Value = "Percent Change"
+        ws.Cells(1, 12).Value = "Total Volume"
+        Set summaryTable = ws.Range("I1:L1")
+    
+    outputRow = 2
+    maxIncrease = 0
+    maxDecrease = 0
+    maxVolume = 0
+    maxIncreaseTicker = ""
+    maxDecreaseTicker = ""
+    maxVolumeTicker = ""
+    
+    For i = 2 To lastRow
+        If ws.Cells(i, 1).Value <> ws.Cells(i - 1, 1).Value Then
+            ticker = ws.Cells(i, 1).Value
+            openPrice = ws.Cells(i, 3).Value
+            totalVolume = 0
+        End If
+        totalVolume = totalVolume + ws.Cells(i, 7).Value
+        If ws.Cells(i, 1).Value <> ws.Cells(i + 1, 1).Value Then
+            closePrice = ws.Cells(i, 6).Value
+            yearlyChange = closePrice - openPrice
+            If openPrice <> 0 Then
+                percentChange = yearlyChange / openPrice * 100
+            Else
+                percentChange = 0
+            End If
+            summaryTable.Cells(outputRow, 1).Value = ticker
+            summaryTable.Cells(outputRow, 2).Value = yearlyChange
+            summaryTable.Cells(outputRow, 3).Value = percentChange
+            summaryTable.Cells(outputRow, 4).Value = totalVolume
+            If percentChange > maxIncrease Then
+                maxIncrease = percentChange
+                maxIncreaseTicker = ticker
+            End If
+            If percentChange < maxDecrease Then
+                maxDecrease = percentChange
+                maxDecreaseTicker = ticker
+            End If
+            If totalVolume > maxVolume Then
+                maxVolume = totalVolume
+                maxVolumeTicker = ticker
+            End If
+        
+            outputRow = outputRow + 1
+            totalVolume = 0
+        End If
+    Next i
+    
+    ws.Cells(2, 14).Value = "Greatest % Increase"
+    ws.Cells(2, 15).Value = maxIncreaseTicker
+    ws.Cells(2, 16).Value = maxIncrease & "%"
+    ws.Cells(3, 14).Value = "Greatest % Decrease"
+    ws.Cells(3, 15).Value = maxDecreaseTicker
+    ws.Cells(3, 16).Value = maxDecrease & "%"
+    ws.Cells(4, 14).Value = "Greatest Total Volume"
+    ws.Cells(4, 15).Value = maxVolumeTicker
+    ws.Cells(4, 16).Value = maxVolume
+    Next ws
+End Sub
